@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Document</title>
+    <style>
+      body {
+        background-color: #191919;
+        color: rgb(236, 199, 130);
+        font-weight: 200;
+        text-align: center;
+        padding: 200px;
+      }
+
+      button {
+        color: cyan;
+        background-color: brown;
+        padding: 12px;
+        margin: 15px;
+        font-size: 18px;
+      }
+      button:hover {
+        color: aquamarine;
+        background-color: orangered;
+        font-size: 23px;
+      }
+
+      #clock-container {
+        margin: 30px auto;
+        border: 4px solid #6cca89;
+        border-radius: 50%;
+        width: 400px;
+        height: 400px;
+        display: table;
+        position: relative;
+      }
+
+      #clock-content {
+        display: table-cell;
+        vertical-align: middle;
+      }
+
+      #clock-counter {
+        font-size: 5em;
+      }
+      #clock-label {
+        margin-top: -20px;
+        font-size: 2em;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 style="font-size: 35px; color: orange">Pomodoro Clock</h2>
+    <div>
+      <div>
+        <div id="break-timer">Break time</div>
+        <input type="number" value="5" id="break-indicator" />
+      </div>
+      <br />
+      <div>
+        <div id="session-time">Session/work Time</div>
+        <input type="number" value="25" id="session-indicator" />
+      </div>
+      <div id="clock-container">
+        <div id="clock-content">
+          <div id="clock-label">Session</div>
+          <div id="clock-counter">25</div>
+          <button id="clock-button">Start</button>
+          <button id="reset-button">Reset</button>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    var breakTime = 300;
+    var sessionTime = 1500;
+    var clockType = "session";
+    var clockRunning = false;
+    var clockTime = sessionTime;
+
+    let breakIndicator = document.querySelector("#break-indicator");
+    let sessionIndicator = document.querySelector("#session-indicator");
+    let clockCounter = document.querySelector("#clock-counter");
+
+    var inMinSec = function (time) {
+      var m = Math.floor(time / 60);
+      var s = time % 60;
+
+      if (s < 10) {
+        s = "0" + s.toString();
+      }
+      return m + ":" + s;
+    };
+
+    var updateClockCounter = function () {
+      clockCounter.innerText = inMinSec(clockTime);
+    };
+
+    var resetApp = function () {
+      breakTime = parseInt(breakIndicator.value) * 60;
+      sessionTime = parseInt(sessionIndicator.value) * 60;
+      clockTime = sessionTime;
+      clockType = "session";
+
+      clockLabel.innerText = "Session";
+      clockButton.innerText = "Start";
+      updateClockCounter();
+    };
+
+    // parseInt(sessionIndicator.value) * 60
+    updateClockCounter();
+
+    let clockButton = document.querySelector("#clock-button");
+    let resetButton = document.querySelector("#reset-button");
+    let clockLabel = document.querySelector("#clock-label");
+
+    var countdown = function () {
+      if (clockTime > 0 && clockRunning) {
+        clockTime -= 1;
+        updateClockCounter();
+      } else if (clockTime == 0 && clockRunning) {
+        if (clockType === "session") {
+          clockLabel.innerText = "Break";
+          clockType = "break";
+          clockTime = breakTime;
+          alert("Take Break !");
+        } else {
+          clockLabel.innerText = "Session";
+          clockType = "session";
+          clockTime = sessionTime;
+          alert("Start work !");
+        }
+      }
+    };
+
+    var countdownId;
+    clockButton.addEventListener("click", function () {
+      if (!clockRunning) {
+        clockRunning = true;
+        countdownId = window.setInterval(countdown, 10);
+        clockButton.innerText = "Pause";
+      } else {
+        clockRunning = false;
+        clockButton.innerText = "Start";
+        window.clearInterval(countdownId);
+      }
+    });
+
+    resetButton.addEventListener("click", function () {
+      clockRunning = false;
+      resetApp();
+    });
+  </script>
+</html>
